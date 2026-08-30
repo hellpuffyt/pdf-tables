@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdf-tables"
+version = "0.1.0"
+description = "Extract tables from PDFs into CSV, reporting when the structure is ambiguous."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Prabesh Sharma" }]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "pdfplumber>=0.11,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "reportlab>=4.0",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "build>=1.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/hellpuffyt/pdf-tables"
+Issues = "https://github.com/hellpuffyt/pdf-tables/issues"
+
+[project.scripts]
+pdf-tables = "pdf_tables.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pdf_tables"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = true
+files = ["src"]
+exclude = ["build/", "dist/", "scratch/"]
+
+[[tool.mypy.overrides]]
+module = ["pdfplumber.*", "reportlab.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
