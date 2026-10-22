@@ -30,8 +30,17 @@ def _bbox_overlap_ratio(a: BBox, b: BBox) -> float:
     return inter / min(area_a, area_b)
 
 
+class PageSelectionError(ValueError):
+    """A ``--pages`` value that is malformed or selects no page of the PDF."""
+
+
 def _parse_pages(pages_spec: str | None, n_pages: int) -> list[int]:
-    """Parse a 1-based page selector like "1,3-5" into a sorted list."""
+    """Parse a 1-based page selector like "1,3-5" into a sorted list.
+
+    Pages beyond the document are dropped, but a selector that is malformed,
+    has a reversed range, or selects no existing page at all is an error:
+    silently extracting nothing from "--pages 99" looks like "no tables".
+    """
     if not pages_spec:
         return list(range(1, n_pages + 1))
     result: set[int] = set()
@@ -39,13 +48,25 @@ def _parse_pages(pages_spec: str | None, n_pages: int) -> list[int]:
         part = part.strip()
         if not part:
             continue
-        if "-" in part:
-            start_s, end_s = part.split("-", 1)
-            start, end = int(start_s), int(end_s)
-            result.update(range(start, end + 1))
-        else:
-            result.add(int(part))
-    return sorted(p for p in result if 1 <= p <= n_pages)
+        try:
+            if "-" in part:
+                start_s, end_s = part.split("-", 1)
+                start, end = int(start_s), int(end_s)
+                if start > end:
+                    raise PageSelectionError(f"reversed page range {part!r}")
+                result.update(range(start, end + 1))
+            else:
+                result.add(int(part))
+        except ValueError as exc:
+            if isinstance(exc, PageSelectionError):
+                raise
+            raise PageSelectionError(f"invalid page selector {part!r}") from exc
+    selected = sorted(p for p in result if 1 <= p <= n_pages)
+    if result and not selected:
+        raise PageSelectionError(
+            f"--pages {pages_spec!r} selects no page; the PDF has {n_pages} page(s)"
+        )
+    return selected
 
 
 def extract_tables(

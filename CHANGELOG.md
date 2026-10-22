@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- `--pages` selecting no existing page (`99` on a one-page PDF, `0`, `3-1`)
+  exited 0 with "Extracted 0 table(s)"; a malformed selector was reported as
+  "failed to process". Both are now usage errors (exit 2).
+
+### Changed
+
+- README: `pip install pdf-tables` installed an unrelated PyPI package of the
+  same name; install from source instead. Documented the CSV-formula caveat
+  and the extraction check. Added `SECURITY.md`, `.editorconfig`,
+  `docs/PRODUCTION_READINESS.md`.
+
 ## [0.1.0] - 2026-08-30
 
 ### Added
