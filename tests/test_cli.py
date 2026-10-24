@@ -80,3 +80,10 @@ def test_cli_version_flag() -> None:
     with pytest.raises(SystemExit) as exc_info:
         main(["--version"])
     assert exc_info.value.code == 0
+
+
+def test_cli_pages_outside_the_document_is_a_usage_error(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
+    # "--pages 99" on a one-page PDF used to exit 0 with "Extracted 0 table(s)".
+    path = ruled_table_pdf(tmp_path / "t.pdf", [["A", "B"], ["1", "2"]])
+    assert main([str(path), "--pages", "99", "--out", str(tmp_path / "out")]) == 2
+    assert "selects no page" in capsys.readouterr().err

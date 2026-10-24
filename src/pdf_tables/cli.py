@@ -9,7 +9,7 @@ from pathlib import Path
 import pdfplumber
 
 from . import __version__
-from .extract import extract_tables
+from .extract import PageSelectionError, extract_tables
 from .output import write_outputs
 
 
@@ -68,6 +68,9 @@ def main(argv: list[str] | None = None) -> int:
                 pages=args.pages,
                 min_confidence=args.min_confidence,
             )
+    except PageSelectionError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     except Exception as exc:  # pragma: no cover - defensive top-level guard
         print(f"error: failed to process {args.pdf}: {exc}", file=sys.stderr)
         return 1

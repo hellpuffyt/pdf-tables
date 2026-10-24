@@ -13,7 +13,7 @@ from pdf_builders import (
     whitespace_varying_columns_pdf,
 )
 
-from pdf_tables.extract import _parse_pages, extract_tables
+from pdf_tables.extract import PageSelectionError, _parse_pages, extract_tables
 
 
 def test_parse_pages_none_means_all() -> None:
@@ -131,3 +131,18 @@ def test_all_strategies_accept_a_blank_pdf(tmp_path: Path, strategy: str) -> Non
     with pdfplumber.open(str(path)) as pdf:
         tables = extract_tables(pdf, strategy=strategy)
     assert tables == []
+
+
+# --- audit regressions: --pages must not silently select nothing ---------
+
+
+@pytest.mark.parametrize("spec", ["99", "0", "6-9"])
+def test_parse_pages_selecting_no_page_is_an_error(spec: str) -> None:
+    with pytest.raises(PageSelectionError, match="selects no page"):
+        _parse_pages(spec, 5)
+
+
+@pytest.mark.parametrize("spec", ["x", "1-y", "3-1"])
+def test_parse_pages_malformed_is_an_error(spec: str) -> None:
+    with pytest.raises(PageSelectionError):
+        _parse_pages(spec, 5)

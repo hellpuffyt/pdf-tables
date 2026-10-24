@@ -106,14 +106,12 @@ src/pdf_tables/
 
 ## Installation
 
-```bash
-pip install pdf-tables
-```
-
-Or from a local checkout:
+This project is not on PyPI. **`pip install pdf-tables` installs an unrelated
+package with the same name** — install from a clone instead:
 
 ```bash
-pip install -e ".[dev]"
+git clone https://github.com/hellpuffyt/pdf-tables && cd pdf-tables
+pip install .            # or: pip install -e ".[dev]" for development
 ```
 
 Requires Python 3.10+. The only runtime dependency is `pdfplumber`, a
@@ -147,7 +145,25 @@ options:
                         Drop tables with confidence below this threshold (0.0-1.0)
 ```
 
-### Library usage
+#`--pages` drops page numbers beyond the document, but a selector that is
+malformed (`x`), reversed (`3-1`) or selects no existing page (`99` on a
+one-page PDF) exits with code 2 instead of reporting "0 tables".
+
+**Opening the CSVs in a spreadsheet:** cell text is written exactly as it
+appears in the PDF. A cell beginning with `=`, `+`, `-` or `@` from an
+untrusted PDF can be interpreted as a formula by Excel/LibreOffice; import the
+CSV as text if the source is not trusted.
+
+## Verification
+
+Beyond the test suite, 10 random tables (2–6 columns, 3–12 rows) were rendered
+to PDF with reportlab both with grid lines and as plain positioned text;
+`--strategy ruled` and `--strategy whitespace` reproduced all 20 tables cell
+for cell. Real-world PDFs (scans, multi-column layouts) were not part of this
+check. See [SECURITY.md](SECURITY.md) and
+[docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md).
+
+## Library usage
 
 ```python
 import pdfplumber
