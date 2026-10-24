@@ -145,7 +145,7 @@ options:
                         Drop tables with confidence below this threshold (0.0-1.0)
 ```
 
-#`--pages` drops page numbers beyond the document, but a selector that is
+`--pages` drops page numbers beyond the document, but a selector that is
 malformed (`x`), reversed (`3-1`) or selects no existing page (`99` on a
 one-page PDF) exits with code 2 instead of reporting "0 tables".
 
@@ -258,7 +258,7 @@ pdf-tables scanned.pdf --strategy whitespace
 pytest
 ```
 
-The test suite (86 tests) generates every fixture PDF at test time with
+The test suite (93 tests) generates every fixture PDF at test time with
 `reportlab` — no binary PDFs are committed to the repository. Fixtures
 include ruled tables, whitespace-aligned tables, a merged cell, wrapped
 text (both ruled and whitespace), varying column counts, multi-page PDFs,
