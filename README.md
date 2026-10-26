@@ -3,12 +3,16 @@
 Extract tables from PDFs into CSV, and get told which of the extracted tables
 you need to check by hand.
 
-<img src="docs/assets/overview.svg" width="100%" alt="Pipeline diagram: cli.py opens the PDF with pdfplumber, extract.py selects pages, ruled.py and whitespace.py detect tables in parallel and share headers.py for header detection, extract.py merges the two in auto mode, and output.py writes one CSV per table plus manifest.json with confidence and warnings.">
-
 **Status:** version 0.1.0, not published to PyPI. Tested on PDFs generated with
 reportlab; real-world documents (scans, multi-column layouts) have not been part
 of the test suite. CI runs the tests on Linux, macOS and Windows with Python
 3.10 to 3.13.
+
+## Demo
+
+<img src="docs/screenshots/merged-cell-warning.png" width="100%" alt="Terminal capture: pdf-tables merged.pdf -o out/ reports one ruled table with 4 rows, 3 columns, confidence 0.90 and the warning possible_merged_cell:rows=[2]; the CSV holds Item,Q1,Q2 / Widgets,10,12 / Discontinued,, / Gears,7,9; pdf-tables merged.pdf --pages 99 fails with a page selection error.">
+
+*Real terminal capture of the [Quick start](#quick-start) PDF: the merged row is extracted and flagged, and an out-of-range `--pages` is an error instead of "0 tables".*
 
 ## What it does
 
@@ -127,8 +131,18 @@ Extracted 1 table(s) from merged.pdf
 Manifest: out/manifest.json
 ```
 
-`out/table_p1_0.csv` holds the four rows, with the merged row written as
-`Discontinued,,`.
+```console
+$ cat out/table_p1_0.csv
+Item,Q1,Q2
+Widgets,10,12
+Discontinued,,
+Gears,7,9
+$ pdf-tables merged.pdf --pages 99
+error: --pages '99' selects no page; the PDF has 1 page(s)
+```
+
+The merged row keeps its text in the first column and leaves the spanned
+cells empty.
 
 ## Usage
 
@@ -291,6 +305,10 @@ pdf-tables scanned.pdf --strategy whitespace
 ```
 
 ## Architecture
+
+Diagram of the pipeline (a drawing, not a screenshot):
+
+<img src="docs/assets/overview.svg" width="100%" alt="Pipeline diagram: cli.py opens the PDF with pdfplumber, extract.py selects pages, ruled.py and whitespace.py detect tables in parallel and share headers.py for header detection, extract.py merges the two in auto mode, and output.py writes one CSV per table plus manifest.json with confidence and warnings.">
 
 ```
 src/pdf_tables/
