@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="t d">
+  <title id="t">pdf-tables extraction pipeline</title>
+  <desc id="d">cli.py opens the PDF with pdfplumber and extract.py selects pages. Each page goes through ruled.py, which builds a grid from ruling-line intersections, and whitespace.py, which clusters words into rows and finds column bands from horizontal gaps. Both call headers.py for header detection. In auto mode extract.py keeps ruled tables, adds non-overlapping whitespace tables, and flags a strategy disagreement when overlapping tables differ in column count. After the min-confidence filter, output.py writes one CSV per table and a manifest.json with confidence and warnings.</desc>
+  <rect width="1200" height="480" fill="#0C0D0D"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A3AAA6"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3FBF8A"/></marker>
+  </defs>
+  <g font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" fill="#A3AAA6" font-size="13">
+    <text x="40" y="44" fill="#EEEAE2" font-size="20" font-weight="600">pdf-tables: two detectors, one manifest of what looked ambiguous</text>
+    <text x="40" y="68">Modules in src/pdf_tables/. The only runtime dependency is pdfplumber; there is no OCR, so the PDF needs a text layer.</text>
+  </g>
+  <g fill="#17191A" stroke="#2A2E2D" stroke-width="1.5">
+    <rect x="40" y="150" width="170" height="130" rx="8"/>
+    <rect x="240" y="150" width="170" height="130" rx="8"/>
+    <rect x="440" y="88" width="300" height="134" rx="8"/>
+    <rect x="440" y="236" width="300" height="124" rx="8"/>
+    <rect x="770" y="150" width="210" height="130" rx="8" stroke="#3FBF8A"/>
+    <rect x="1010" y="150" width="150" height="130" rx="8"/>
+    <rect x="440" y="384" width="720" height="76" rx="8" stroke-dasharray="5 4"/>
+  </g>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="14" fill="#EEEAE2">
+    <text x="56" y="178">cli.py</text>
+    <text x="256" y="178">extract.py</text>
+    <text x="456" y="116">ruled.py</text>
+    <text x="456" y="264">whitespace.py</text>
+    <text x="786" y="178" fill="#3FBF8A">extract.py (auto)</text>
+    <text x="1026" y="178">output.py</text>
+    <text x="456" y="410">headers.py detect_header()</text>
+  </g>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="12" fill="#A3AAA6">
+    <text x="56" y="204">pdfplumber.open</text>
+    <text x="56" y="226">--strategy</text>
+    <text x="56" y="246">--pages</text>
+    <text x="56" y="266">--min-confidence</text>
+    <text x="256" y="204">_parse_pages</text>
+    <text x="256" y="226">"1,3-5" to list</text>
+    <text x="256" y="246">bad selector:</text>
+    <text x="256" y="266">exit 2</text>
+    <text x="456" y="140">page.find_tables (lines strategy)</text>
+    <text x="456" y="160">None slot in grid: merged cell</text>
+    <text x="456" y="180">ragged rows: column_count_varies</text>
+    <text x="456" y="200">multi-line cell: wrapped_text_joined</text>
+    <text x="456" y="288">cluster words into rows by y</text>
+    <text x="456" y="308">x-interval gaps become column bands</text>
+    <text x="456" y="328">fold tight, sparse rows into row above</text>
+    <text x="456" y="346">need 2+ rows and 2+ bands</text>
+    <text x="786" y="204">keep ruled tables</text>
+    <text x="786" y="224">add whitespace tables</text>
+    <text x="786" y="242">with overlap &lt;= 0.6</text>
+    <text x="786" y="262">cols differ: disagreement</text>
+    <text x="1026" y="204">table_pN_i.csv</text>
+    <text x="1026" y="226">manifest.json</text>
+    <text x="1026" y="246">confidence</text>
+    <text x="1026" y="266">warnings[]</text>
+    <text x="456" y="432">Used by both detectors. Signals: case contrast, numbers under a text header, bold row 1.</text>
+    <text x="456" y="450">A score of 0.5 or more calls row 1 a header; otherwise the table gets header_uncertain.</text>
+  </g>
+  <g stroke="#A3AAA6" stroke-width="1.5" fill="none">
+    <path d="M210 215 H236" marker-end="url(#a)"/>
+    <path d="M410 200 C425 200 425 155 436 155" marker-end="url(#a)"/>
+    <path d="M410 230 C425 230 425 295 436 295" marker-end="url(#a)"/>
+    <path d="M740 155 C755 155 755 200 766 200" marker-end="url(#a)"/>
+    <path d="M740 295 C755 295 755 230 766 230" marker-end="url(#a)"/>
+    <path d="M590 360 V380" stroke-dasharray="4 4" marker-end="url(#a)"/>
+  </g>
+  <path d="M980 215 H1006" stroke="#3FBF8A" stroke-width="1.5" fill="none" marker-end="url(#g)"/>
+</svg>
